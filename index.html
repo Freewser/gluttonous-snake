@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>贪吃蛇大冒险 · Gluttonous Snake</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐍</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <h1 class="logo">贪吃蛇<span class="logo-sub">GLUTTONOUS SNAKE</span></h1>
+      <div class="topbar-actions">
+        <button id="historyBtn" class="icon-btn" title="历史记录" aria-label="历史记录">📋</button>
+        <button id="soundBtn" class="icon-btn" title="音效开关" aria-label="音效开关">🔊</button>
+      </div>
+    </header>
+
+    <section id="menuScreen" class="screen">
+      <div class="menu-hero">
+        <div class="menu-emoji">🐍</div>
+        <h2 class="menu-title">贪吃蛇大冒险</h2>
+        <p class="menu-sub">12 个主题关卡 · 星级评价 · 经典无尽</p>
+      </div>
+      <div class="menu-stats" id="menuStats">⭐ 0/36 · 已解锁 1/12 关</div>
+      <div class="menu-buttons">
+        <button class="btn btn-big" id="adventureBtn">🗺️ 闯关模式</button>
+        <button class="btn btn-big btn-ghost" id="classicBtn">♾️ 经典模式</button>
+      </div>
+      <p class="menu-tip">方向键 / WASD 移动 · 空格暂停 · R 重开 · 手机滑动</p>
+    </section>
+
+    <section id="levelScreen" class="screen hidden">
+      <div class="level-head">
+        <button class="icon-btn" id="backMenuBtn" title="返回菜单" aria-label="返回菜单">←</button>
+        <h2>选择关卡</h2>
+        <span class="level-total" id="levelTotal">⭐ 0/36</span>
+      </div>
+      <div class="level-grid" id="levelGrid"></div>
+      <p class="level-tip">⭐ 历史星级越高，命数越多：★=3 命 · ★★=4 命 · ★★★=5 命</p>
+    </section>
+
+    <section id="gameScreen" class="screen hidden">
+      <div class="hud">
+        <div class="hud-card">
+          <span class="hud-label" id="hudLabel1">得分</span>
+          <span class="hud-value" id="hudValue1">0</span>
+        </div>
+        <div class="hud-card">
+          <span class="hud-label" id="hudLabel2">最高分</span>
+          <span class="hud-value" id="hudValue2">0</span>
+        </div>
+        <div class="hud-card">
+          <span class="hud-label" id="hudLabel3">速度</span>
+          <span class="hud-value" id="hudValue3">1</span>
+        </div>
+      </div>
+
+      <div class="board-wrap" id="boardWrap">
+        <canvas id="game" width="480" height="480"></canvas>
+
+        <div class="overlay hidden" id="introOverlay">
+          <div class="panel">
+            <h2 id="introTitle">第 1 关 · 草原初征</h2>
+            <div class="intro-icon" id="introIcon">🌿</div>
+            <p class="desc" id="introDesc">目标：吃到 8 个 🍎</p>
+            <p class="intro-meta" id="introMeta"></p>
+            <p class="intro-tip" id="introTip"></p>
+            <button class="btn" id="introStartBtn">开始挑战</button>
+          </div>
+        </div>
+
+        <div class="overlay hidden" id="pauseOverlay">
+          <div class="panel">
+            <h2>已暂停</h2>
+            <p class="desc">按空格或点击按钮继续</p>
+            <button class="btn" id="resumeBtn">继续游戏</button>
+          </div>
+        </div>
+
+        <div class="overlay hidden" id="overOverlay">
+          <div class="panel">
+            <h2 id="overTitle">挑战失败</h2>
+            <p class="desc" id="overDesc"></p>
+            <p class="intro-tip" id="overTip"></p>
+            <div class="panel-actions">
+              <button class="btn" id="overPrimaryBtn">重新挑战</button>
+              <button class="btn btn-ghost" id="overSecondaryBtn">返回选关</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="overlay hidden" id="completeOverlay">
+          <div class="panel">
+            <h2>关卡完成！</h2>
+            <div class="stars" id="starRow">
+              <span class="star" id="star1">★</span>
+              <span class="star" id="star2">★</span>
+              <span class="star" id="star3">★</span>
+            </div>
+            <p class="desc" id="completeDesc"></p>
+            <p class="intro-tip" id="completeReward"></p>
+            <div class="panel-actions">
+              <button class="btn" id="nextLevelBtn">下一关</button>
+              <button class="btn btn-ghost" id="replayBtn">重玩</button>
+              <button class="btn btn-ghost" id="completeBackBtn">选关</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="overlay hidden" id="historyOverlay">
+          <div class="panel history-panel">
+            <h2>历史记录</h2>
+            <p class="desc" id="historySummary">共 0 局 · 平均 0 分</p>
+            <ul class="history-list" id="historyList"></ul>
+            <p class="empty" id="historyEmpty">还没有记录，来玩一局吧！</p>
+            <div class="history-actions">
+              <button class="btn btn-ghost" id="clearHistoryBtn">清空记录</button>
+              <button class="btn" id="closeHistoryBtn">关闭</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="foot" id="gameFoot">每 5 个食物提速一档</footer>
+    </section>
+  </div>
+  <script src="levels.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
